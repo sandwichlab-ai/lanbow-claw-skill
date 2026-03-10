@@ -38,8 +38,7 @@ Each feature has its own API dependency — you only need the ones you use:
 export GEMINI_API_KEY="your-google-gemini-api-key"
 
 # Feature 3 (Ad Delivery): Install and auth the CLI
-cd /path/to/meta-ads-cli
-npm install && npm run build && npm link
+npm install -g lanbow-ads                # Install CLI globally
 lanbow-ads auth login                    # Opens browser for OAuth
 lanbow-ads config set --account act_XXX  # Set default ad account
 
