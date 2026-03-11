@@ -2,6 +2,28 @@
 
 From scratch: Register a Meta developer account → Create an app → Get App ID & App Secret → Get an Access Token → Complete configuration in the lanbow-ads CLI.
 
+## Agent Behavior
+
+**When the user needs to set up their Meta ad account, guide them through Steps 1-2 (done in the browser by the user), then ask them to provide their credentials. Once they give you the App ID, App Secret, Access Token, or Ad Account ID, run the corresponding CLI commands on their behalf:**
+
+```bash
+# User provides App ID and App Secret → you run:
+lanbow-ads config set --app-id <APP_ID> --app-secret <APP_SECRET>
+
+# User provides Access Token → you run:
+lanbow-ads auth set-token <ACCESS_TOKEN>
+
+# User has App Secret configured and wants to extend token → you run:
+lanbow-ads auth exchange --token <SHORT_LIVED_TOKEN>
+
+# User provides Ad Account ID → you run:
+lanbow-ads config set --account <AD_ACCOUNT_ID>
+```
+
+**Do not ask the user to run these commands themselves. You have the CLI available — execute the commands directly once the user provides the values.**
+
+If the user prefers to use the OAuth browser flow instead of providing a token directly, run `lanbow-ads auth login` for them and guide them through the browser authorization steps.
+
 ---
 
 ## Prerequisites

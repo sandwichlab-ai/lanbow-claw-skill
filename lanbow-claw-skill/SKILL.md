@@ -129,6 +129,8 @@ Execute campaign setup and management via the `lanbow-ads` CLI.
 
 **Requires:** Meta Access Token (`lanbow-ads auth login`)
 
+**Setup assistance:** If the user hasn't configured the CLI yet, proactively help them. Ask for their App ID, App Secret, Access Token, and Ad Account ID, then run the CLI commands to configure everything for them — do not ask the user to run these commands themselves. For a full setup walkthrough, see [meta-account-setup.md](references/meta-account-setup.md).
+
 **Campaign creation sequence:**
 1. `lanbow-ads campaigns create` — create campaign (PAUSED)
 2. `lanbow-ads images upload` / `lanbow-ads videos upload` — upload media
@@ -191,6 +193,7 @@ All sub-skill instructions and reference materials are self-contained in `refere
 ### Feature 3: Ad Delivery
 - **[ad-delivery.md](references/ad-delivery.md)** — Full lanbow-ads CLI guide: campaign creation, targeting, insights, configuration
 - **[ad-delivery-commands.md](references/ad-delivery-commands.md)** — Complete command reference with all flags, types, and descriptions
+- **[meta-account-setup.md](references/meta-account-setup.md)** — Step-by-step Meta developer registration, app creation, OAuth setup, and ad account configuration
 
 ### Feature 4: Post-Campaign Review
 - **[post-campaign-review.md](references/post-campaign-review.md)** — Full diagnostic framework, metric benchmarks, optimization plan template, feedback loop

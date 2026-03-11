@@ -11,7 +11,7 @@ Manage Meta advertising campaigns using the `lanbow-ads` CLI. Commands are organ
 
 ## Prerequisites
 
-Ensure lanbow-ads is installed and authenticated:
+Ensure lanbow-ads is installed and authenticated. For a full step-by-step guide (Meta developer registration, app creation, OAuth setup), see [meta-account-setup.md](meta-account-setup.md).
 
 ```bash
 npm install -g lanbow-ads           # install CLI globally

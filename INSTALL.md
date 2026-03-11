@@ -181,7 +181,7 @@ lanbow-ads --version
 
 Feature 3 (Ad Delivery) and Feature 4 (Post-Campaign Review) require Meta ad account authorization.
 
-> For a detailed step-by-step tutorial, see [SETUP_META_ACCOUNT.md](SETUP_META_ACCOUNT.md)
+> For a detailed step-by-step tutorial, see [meta-account-setup.md](lanbow-claw-skill/references/meta-account-setup.md)
 
 ### 3.1 Create a Meta App
 

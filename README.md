@@ -124,6 +124,7 @@ lanbow-claw-skill/
     ├── creative-generation.md            # Feature 2: Gemini pipeline + prompts
     ├── ad-delivery.md                    # Feature 3: lanbow-ads CLI guide
     ├── ad-delivery-commands.md           # Complete CLI command reference
+    ├── meta-account-setup.md            # Meta developer & ad account setup guide
     └── post-campaign-review.md           # Feature 4: diagnostic framework
 ```
 
