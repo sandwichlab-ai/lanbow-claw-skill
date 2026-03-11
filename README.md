@@ -23,9 +23,9 @@ Strategy Research → Creative Generation → Ad Delivery → Post-Campaign Revi
 
 ### 1. Install the skill
 
-Just tell your Openclaw:
+Tell your AI coding agent to read the installation guide:
 
-> "Install this skill: https://github.com/sandwichlab-ai/lanbow-claw-skill"
+> "Read https://raw.githubusercontent.com/sandwichlab-ai/lanbow-claw-skill/main/INSTALL.md and follow the instructions to install this skill."
 
 ### 2. Configure dependencies
 
