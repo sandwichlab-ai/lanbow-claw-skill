@@ -11,6 +11,19 @@ description: |
   (5) Coordinating between strategy, creative, delivery, and review phases
   This skill orchestrates 4 sub-skills: ads-strategy-researcher (insights), creative_gen (creatives),
   lanbow-ads (delivery), and post-campaign-review (optimization). Each can also be used independently.
+homepage: https://github.com/sandwichlab-ai/lanbow-claw-skill
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "📢",
+        "requires": {
+          "bins": ["lanbow-ads"],
+          "env": ["GEMINI_API_KEY"]
+        },
+        "primaryEnv": "GEMINI_API_KEY"
+      }
+  }
 ---
 
 # Lanbow Ads Skills
@@ -176,6 +189,37 @@ Review         ──→ optimization actions              ──→ Ad Delivery
 Review         ──→ creative refresh needs            ──→ Creative Gen (new round)
 Review         ──→ strategy refinement needs         ──→ Strategy Research (re-analyze)
 ```
+
+## Security & Privacy
+
+### Required Credentials
+
+| Credential | Used By | How Provided | Storage |
+|-----------|---------|-------------|---------|
+| `GEMINI_API_KEY` | Feature 2 (Creative Generation) | Environment variable | User's environment only; never persisted by this skill |
+| Meta Access Token | Feature 3 (Ad Delivery) | User pastes token; agent runs `lanbow-ads auth set-token` | Stored locally by `lanbow-ads` CLI in its config directory |
+| Meta App ID | Feature 3 (Ad Delivery) | User provides; agent runs `lanbow-ads config set --app-id` | Stored locally by `lanbow-ads` CLI config |
+| Meta App Secret | Feature 3 (Ad Delivery) | User provides; agent runs `lanbow-ads config set --app-secret` | Stored locally by `lanbow-ads` CLI config |
+
+### Required Runtime Dependencies
+
+| Dependency | Required By | Purpose |
+|-----------|------------|---------|
+| `lanbow-ads` CLI | Features 3 & 4 | Campaign management and performance data retrieval via Meta Marketing API |
+| WebSearch / WebFetch | Feature 1 | Market research and competitive intelligence gathering |
+
+### Data Flow & Privacy
+
+- **What leaves the machine:** API calls to Meta Marketing API (via `lanbow-ads` CLI), API calls to Google Gemini (for image generation), web searches (for strategy research)
+- **What stays local:** Strategy reports, generated creative images, campaign review documents, CLI configuration files
+- **Credential handling:** This skill instructs the agent to ask the user for credentials and configure the `lanbow-ads` CLI on their behalf. Credentials are stored by the CLI in its local config directory (`~/.lanbow-ads/` or equivalent). The skill itself does not persist or transmit credentials beyond passing them to the CLI.
+
+### Security Recommendations
+
+1. **Use short-lived tokens** when possible — start with a User Access Token from Graph API Explorer (~1-2 hours validity) rather than long-lived System User Tokens
+2. **Verify your runtime environment** — only provide credentials if the agent is running in an environment you trust and control
+3. **Review stored credentials** — after use, check `lanbow-ads config list` to see what's stored and `lanbow-ads auth logout` to clear tokens
+4. **Least privilege** — when generating tokens, grant only `ads_management` and `ads_read` scopes unless additional permissions are explicitly needed
 
 ## Resources
 
