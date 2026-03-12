@@ -19,14 +19,16 @@ npm install -g lanbow-ads           # install CLI globally
 
 **Authentication — try in this order:**
 
-1. **Environment variables (best):** If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_APP_SECRET`, `META_AD_ACCOUNT_ID` are set, configure automatically:
+1. **Environment variables or platform secret fields (best):** If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_AD_ACCOUNT_ID` are set, configure automatically:
    ```bash
-   lanbow-ads config set --app-id "$META_APP_ID" --app-secret "$META_APP_SECRET"
+   lanbow-ads config set --app-id "$META_APP_ID"
    lanbow-ads auth set-token "$META_ACCESS_TOKEN"
    lanbow-ads config set --account "$META_AD_ACCOUNT_ID"
+   # Only if META_APP_SECRET is set (optional — for token exchange only):
+   [ -n "$META_APP_SECRET" ] && lanbow-ads config set --app-secret "$META_APP_SECRET"
    ```
 
-2. **User provides credentials directly:** Ask the user for their App ID, App Secret, Access Token, and Ad Account ID, then run the config commands on their behalf. This is the most common path — the user gets tokens from Meta's web interface (Graph API Explorer or Business Settings) and pastes them to you.
+2. **User provides credentials directly:** Ask the user for their Access Token, App ID, and Ad Account ID (minimum needed). Only request App Secret if the user needs token exchange. Recommend the user provide credentials via env vars or platform secret fields rather than pasting into chat. The user gets tokens from Meta's web interface (Graph API Explorer or Business Settings).
 
 3. **`lanbow-ads auth login` (rarely works):** This opens a local browser for OAuth. It only works when you and the user are on the **same machine**. Do NOT attempt this by default — if the user can't open the auth URL, it means you're on different machines. Fall back to method 2 immediately instead of sending auth URLs the user cannot use.
 

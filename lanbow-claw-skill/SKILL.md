@@ -19,7 +19,7 @@ metadata:
         "emoji": "📢",
         "requires": {
           "bins": ["lanbow-ads"],
-          "env": ["META_ACCESS_TOKEN", "META_APP_SECRET", "META_APP_ID", "META_AD_ACCOUNT_ID", "GEMINI_API_KEY"]
+          "env": ["META_ACCESS_TOKEN", "META_APP_ID", "META_AD_ACCOUNT_ID"]
         },
         "primaryEnv": "META_ACCESS_TOKEN"
       }
@@ -124,7 +124,7 @@ Generate ad creative images via 2-step Gemini pipeline: proposals (gemini-2.5-fl
 
 **Trigger phrases:** "generate ad", "create ad image", "ad creative", "generate creatives"
 
-**Requires:** `GEMINI_API_KEY` from user
+**Requires:** `GEMINI_API_KEY` (optional env var — only needed when using this feature; not required for Features 1, 3, or 4)
 
 **Inputs:** product info, audience descriptions, requirements, CTA, aspect ratio, optional product image
 
@@ -140,21 +140,24 @@ Execute campaign setup and management via the `lanbow-ads` CLI.
 
 **Trigger phrases:** "create campaign", "launch ads", "upload image", "show campaigns", "投放广告"
 
-**Requires:** Meta Access Token, App ID, App Secret, Ad Account ID (declared in `requires.env` as `META_ACCESS_TOKEN`, `META_APP_SECRET`, `META_APP_ID`, `META_AD_ACCOUNT_ID`)
+**Requires:** Meta Access Token, App ID, Ad Account ID (declared in `requires.env`). App Secret is optional — only needed for exchanging short-lived tokens to long-lived tokens via `lanbow-ads auth exchange`.
 
 **Credential setup (try in order):**
 
-1. **Environment variables (best):** If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_APP_SECRET`, and `META_AD_ACCOUNT_ID` are already set, configure the CLI automatically:
+1. **Environment variables or platform secret fields (best):** If `META_ACCESS_TOKEN`, `META_APP_ID`, and `META_AD_ACCOUNT_ID` are already set as environment variables (or via your platform's secret/credential fields), configure the CLI automatically:
    ```bash
-   lanbow-ads config set --app-id "$META_APP_ID" --app-secret "$META_APP_SECRET"
+   lanbow-ads config set --app-id "$META_APP_ID"
    lanbow-ads auth set-token "$META_ACCESS_TOKEN"
    lanbow-ads config set --account "$META_AD_ACCOUNT_ID"
+   # Only if META_APP_SECRET is set (optional — needed only for token exchange):
+   [ -n "$META_APP_SECRET" ] && lanbow-ads config set --app-secret "$META_APP_SECRET"
    ```
 
-2. **Ask the user to provide credentials directly (most common):** If env vars are not set, tell the user exactly how to get each credential from Meta's web interface and ask them to paste the values to you:
+2. **Ask the user to provide credentials directly (most common):** If env vars are not set, tell the user exactly how to get each credential from Meta's web interface. **Recommend the user use their platform's secret fields or environment variables rather than pasting credentials directly into chat.** If direct input is the only option, only request the minimum credentials needed for the current task:
    - **Access Token:** Open https://developers.facebook.com/tools/explorer/ → select your App → click "Generate Access Token" → select permissions `ads_management`, `ads_read`, `business_management` → click "Submit" → copy the token
-   - **App ID & App Secret:** Go to https://developers.facebook.com/apps/ → select your App → App Settings → Basic
+   - **App ID:** Go to https://developers.facebook.com/apps/ → select your App → App Settings → Basic
    - **Ad Account ID:** Go to https://adsmanager.facebook.com/ → find `act_XXXXXXXXX` in the URL or account dropdown
+   - **App Secret (only if needed for token exchange):** App Settings → Basic → click "Show" next to App Secret
 
    Then run the CLI commands on their behalf. For a full walkthrough, see [meta-account-setup.md](references/meta-account-setup.md).
 
@@ -210,15 +213,28 @@ Review         ──→ strategy refinement needs         ──→ Strategy Re
 
 ## Security & Privacy
 
-### Required Credentials (all declared in `metadata.openclaw.requires.env`)
+### Credentials
 
-| Env Var              | Sensitivity                               | Used By                  | Storage Location                                       |
-| -------------------- | ----------------------------------------- | ------------------------ | ------------------------------------------------------ |
-| `META_ACCESS_TOKEN`  | **High** — grants full ad account access  | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir (`~/.config/lanbow-ads/`)  |
-| `META_APP_SECRET`    | **High** — can generate long-lived tokens | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
-| `META_APP_ID`        | Medium — app identifier                   | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
-| `META_AD_ACCOUNT_ID` | Low — account identifier                  | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
-| `GEMINI_API_KEY`     | **High** — API access                     | Feature 2 (Creative Gen) | User's environment only; never persisted by this skill |
+**Required** (declared in `metadata.openclaw.requires.env` — needed for ad delivery):
+
+| Env Var              | Sensitivity                              | Used By                 | Storage Location                                      |
+| -------------------- | ---------------------------------------- | ----------------------- | ----------------------------------------------------- |
+| `META_ACCESS_TOKEN`  | **High** — grants ad account access      | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir (`~/.config/lanbow-ads/`) |
+| `META_APP_ID`        | Medium — app identifier                  | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir                           |
+| `META_AD_ACCOUNT_ID` | Low — account identifier                 | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir                           |
+
+**Optional** (only request when the specific feature is needed):
+
+| Env Var           | Sensitivity                               | When Needed                                                        | Storage Location                                       |
+| ----------------- | ----------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
+| `META_APP_SECRET` | **High** — can generate long-lived tokens | Only for `lanbow-ads auth exchange` (short→long-lived token swap)  | `lanbow-ads` CLI config dir                            |
+| `GEMINI_API_KEY`  | **High** — API access                     | Only for Feature 2 (Creative Generation via Gemini)                | User's environment only; never persisted by this skill |
+
+**Do NOT request optional credentials unless the user's task specifically requires them.** For example, listing campaigns or checking insights needs only `META_ACCESS_TOKEN`, `META_APP_ID`, and `META_AD_ACCOUNT_ID`.
+
+### Secure Credential Delivery
+
+**Prefer environment variables or your platform's secret/credential fields over pasting credentials into chat.** If the user must provide credentials in conversation, only request the minimum set needed for the current task. Never ask for `META_APP_SECRET` or `GEMINI_API_KEY` unless the user explicitly needs token exchange or creative generation.
 
 ### Required Runtime Dependencies
 
@@ -264,12 +280,14 @@ lanbow-ads config list          # Verify no secrets remain
 
 ### Security Recommendations
 
-1. **Prefer short-lived tokens** — start with a User Access Token from Graph API Explorer (~1-2 hours). Only use System User Tokens for production automation where you control the runtime
-2. **Verify your runtime environment** — only provide credentials if the agent runs on a machine you trust. Do NOT paste secrets into hosted/shared agent environments
-3. **Use a dedicated test Ad Account** — create a separate Ad Account with minimal budget for agent-managed campaigns; do not use your primary production account
-4. **Least privilege scopes** — when generating tokens, grant only `ads_management` and `ads_read` unless additional permissions are explicitly needed
-5. **Rotate after use** — revoke tokens in [Meta Business Settings](https://business.facebook.com/settings/) after your session ends, especially if you used long-lived tokens or App Secret
-6. **Verify `lanbow-ads` provenance** — install from the [official npm registry](https://www.npmjs.com/package/lanbow-ads) and verify the package before use
+1. **Use env vars or secret fields, not chat** — provide credentials via environment variables or your platform's secret/credential input fields. Avoid pasting App Secret or long-lived tokens directly into an open conversation
+2. **Only supply what's needed** — `GEMINI_API_KEY` is only needed for creative generation, `META_APP_SECRET` is only needed for token exchange. Do not provide them if your task doesn't require those features
+3. **Prefer short-lived tokens** — start with a User Access Token from Graph API Explorer (~1-2 hours). Only use System User Tokens for production automation where you control the runtime
+4. **Verify your runtime environment** — only provide credentials if the agent runs on a machine you trust. Do NOT paste secrets into hosted/shared agent environments
+5. **Use a dedicated test Ad Account** — create a separate Ad Account with minimal budget for agent-managed campaigns; do not use your primary production account
+6. **Least privilege scopes** — when generating tokens, grant only `ads_management` and `ads_read` unless additional permissions are explicitly needed
+7. **Rotate after use** — revoke tokens in [Meta Business Settings](https://business.facebook.com/settings/) after your session ends, especially if you used long-lived tokens or App Secret
+8. **Verify `lanbow-ads` provenance** — install from the [official npm registry](https://www.npmjs.com/package/lanbow-ads) and verify the package before use
 
 ## Resources
 
