@@ -1,12 +1,12 @@
 ---
 name: lanbow-ads-skills
 description: |
-  End-to-end Meta (Facebook/Instagram) advertising workflow orchestrator covering the full ad lifecycle:
+  End-to-end Meta (Facebook/Instagram) advertising system orchestrator covering the full ad lifecycle:
   strategy research, creative generation, campaign delivery, and post-campaign optimization.
   Use when:
   (1) Planning and executing a complete Meta Ads campaign from scratch
   (2) Running the full ads lifecycle: research → create → launch → review → optimize
-  (3) User says "run ads", "launch campaign", "full ads workflow", "ads pipeline", "广告投放全流程"
+  (3) User says "run ads", "launch campaign", "full ads system", "ads pipeline", "广告投放全流程"
   (4) User needs guidance on which ads skill to use for their current task
   (5) Coordinating between strategy, creative, delivery, and review phases
   This skill orchestrates 4 sub-skills: ads-strategy-researcher (insights), creative_gen (creatives),
@@ -26,7 +26,7 @@ End-to-end Meta Ads lifecycle management across 4 features: **Strategy → Creat
 | 3 | Ad Delivery | `lanbow-ads` | Campaign creation and management via Meta Ads CLI | User's Meta Access Token |
 | 4 | Post-Campaign Review | `post-campaign-review` | Performance diagnosis and optimization plan | Campaign delivery data |
 
-## Workflow Decision Tree
+## System Decision Tree
 
 **Starting a new campaign from scratch?**
 → Start at Feature 1 (Strategy) → Feature 2 (Creative) → Feature 3 (Delivery)
@@ -182,7 +182,7 @@ Review         ──→ strategy refinement needs         ──→ Strategy Re
 All sub-skill instructions and reference materials are self-contained in `references/`.
 
 ### Feature 1: Strategy Research
-- **[strategy-research.md](references/strategy-research.md)** — Full strategy research workflow, research protocol, chapter-based output rules
+- **[strategy-research.md](references/strategy-research.md)** — Full strategy research system, research protocol, chapter-based output rules
 - **[strategy-template.md](references/strategy-template.md)** — Report section structure (Executive Summary → Controls)
 - **[strategy-meta-only-template.md](references/strategy-meta-only-template.md)** — Meta-only campaign strategy template
 - **[strategy-document-standards.md](references/strategy-document-standards.md)** — Report formatting standards, table numbering, data source annotations
