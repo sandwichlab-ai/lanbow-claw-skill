@@ -11,7 +11,7 @@ description: |
   (5) Coordinating between strategy, creative, delivery, and review phases
   This skill orchestrates 4 sub-skills: ads-strategy-researcher (insights), creative_gen (creatives),
   lanbow-ads (delivery), and post-campaign-review (optimization). Each can also be used independently.
-homepage: https://github.com/sandwichlab-ai/lanbow-claw-skill
+homepage: https://lanbow.com/
 metadata:
   {
     "openclaw":
@@ -28,16 +28,16 @@ metadata:
 
 # Lanbow Ads Skills
 
-End-to-end Meta Ads lifecycle management across 4 features: **Strategy → Creative → Delivery → Review**, forming a continuous optimization loop.
+End-to-end Meta Ads lifecycle management across 4 features: **Strategy → Creative → Delivery → Review**, forming a continuous optimization loop. Built by [Lanbow](https://lanbow.com/) — see the [detailed guide](https://lanbow.com/blog/lanbow-claw-skill) for more information.
 
 ## Feature Map
 
-| # | Feature | Skill | What It Does | Key Dependency |
-|---|---------|-------|------------|----------------|
-| 1 | Strategy Research | `ads-strategy-researcher` | Market analysis, competitive intelligence, messaging strategy | WebSearch / WebFetch |
-| 2 | Creative Generation | `creative_gen` | AI-generated ad images from strategy inputs | User's Gemini API Key |
-| 3 | Ad Delivery | `lanbow-ads` | Campaign creation and management via Meta Ads CLI | User's Meta Access Token |
-| 4 | Post-Campaign Review | `post-campaign-review` | Performance diagnosis and optimization plan | Campaign delivery data |
+| #   | Feature              | Skill                     | What It Does                                                  | Key Dependency           |
+| --- | -------------------- | ------------------------- | ------------------------------------------------------------- | ------------------------ |
+| 1   | Strategy Research    | `ads-strategy-researcher` | Market analysis, competitive intelligence, messaging strategy | WebSearch / WebFetch     |
+| 2   | Creative Generation  | `creative_gen`            | AI-generated ad images from strategy inputs                   | User's Gemini API Key    |
+| 3   | Ad Delivery          | `lanbow-ads`              | Campaign creation and management via Meta Ads CLI             | User's Meta Access Token |
+| 4   | Post-Campaign Review | `post-campaign-review`    | Performance diagnosis and optimization plan                   | Campaign delivery data   |
 
 ## System Decision Tree
 
@@ -107,12 +107,12 @@ Perform pre-campaign market analysis using WebSearch + WebFetch. Produces a stru
 
 **Key outputs that feed Feature 2:**
 
-| Output | Used By |
-|--------|---------|
+| Output                                  | Used By                                         |
+| --------------------------------------- | ----------------------------------------------- |
 | Key Message (primary promise + reasons) | `product_info` / `requirements` in creative gen |
-| Key Look (visual cues, composition) | `requirements` in creative gen |
-| Ad Angles (hooks, CTAs) | `input_cta` in creative gen |
-| Audience Segments | `audience_descriptions` in creative gen |
+| Key Look (visual cues, composition)     | `requirements` in creative gen                  |
+| Ad Angles (hooks, CTAs)                 | `input_cta` in creative gen                     |
+| Audience Segments                       | `audience_descriptions` in creative gen         |
 
 **Strategy types:** Omni-Channel (Amazon + TikTok + Meta) or Meta-Only
 
@@ -205,20 +205,20 @@ Review         ──→ strategy refinement needs         ──→ Strategy Re
 
 ### Required Credentials (all declared in `metadata.openclaw.requires.env`)
 
-| Env Var | Sensitivity | Used By | Storage Location |
-|---------|------------|---------|-----------------|
-| `META_ACCESS_TOKEN` | **High** — grants full ad account access | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir (`~/.config/lanbow-ads/`) |
-| `META_APP_SECRET` | **High** — can generate long-lived tokens | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir |
-| `META_APP_ID` | Medium — app identifier | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir |
-| `META_AD_ACCOUNT_ID` | Low — account identifier | Feature 3 (Ad Delivery) | `lanbow-ads` CLI config dir |
-| `GEMINI_API_KEY` | **High** — API access | Feature 2 (Creative Gen) | User's environment only; never persisted by this skill |
+| Env Var              | Sensitivity                               | Used By                  | Storage Location                                       |
+| -------------------- | ----------------------------------------- | ------------------------ | ------------------------------------------------------ |
+| `META_ACCESS_TOKEN`  | **High** — grants full ad account access  | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir (`~/.config/lanbow-ads/`)  |
+| `META_APP_SECRET`    | **High** — can generate long-lived tokens | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
+| `META_APP_ID`        | Medium — app identifier                   | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
+| `META_AD_ACCOUNT_ID` | Low — account identifier                  | Feature 3 (Ad Delivery)  | `lanbow-ads` CLI config dir                            |
+| `GEMINI_API_KEY`     | **High** — API access                     | Feature 2 (Creative Gen) | User's environment only; never persisted by this skill |
 
 ### Required Runtime Dependencies
 
-| Dependency | Source | Purpose |
-|-----------|--------|---------|
-| `lanbow-ads` CLI | Install via `npm i -g lanbow-ads` ([npm registry](https://www.npmjs.com/package/lanbow-ads)) | Campaign management and performance data retrieval via Meta Marketing API |
-| WebSearch / WebFetch | Built-in agent tools | Market research and competitive intelligence gathering |
+| Dependency           | Source                                                                                       | Purpose                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `lanbow-ads` CLI     | Install via `npm i -g lanbow-ads` ([npm registry](https://www.npmjs.com/package/lanbow-ads)) | Campaign management and performance data retrieval via Meta Marketing API |
+| WebSearch / WebFetch | Built-in agent tools                                                                         | Market research and competitive intelligence gathering                    |
 
 ### Credential Scope Restrictions
 
@@ -242,11 +242,11 @@ The agent must **NOT**:
 
 ### Token Lifetime & Cleanup
 
-| Token Type | Lifetime | When to Use |
-|-----------|----------|-------------|
-| User Access Token (Graph API Explorer) | ~1-2 hours | Quick tests, one-off campaigns |
-| Long-lived User Token (via `auth exchange`) | ~60 days | Short-term automation |
-| System User Token | Never expires | Production/agency use only |
+| Token Type                                  | Lifetime      | When to Use                    |
+| ------------------------------------------- | ------------- | ------------------------------ |
+| User Access Token (Graph API Explorer)      | ~1-2 hours    | Quick tests, one-off campaigns |
+| Long-lived User Token (via `auth exchange`) | ~60 days      | Short-term automation          |
+| System User Token                           | Never expires | Production/agency use only     |
 
 **After use, always clean up stored credentials:**
 ```bash

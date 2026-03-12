@@ -2,6 +2,8 @@
 
 AI-native Meta Ads workflow skill for Openclaw — from market research to campaign optimization, all through natural language.
 
+**[Lanbow](https://lanbow.com/)** | **[Blog: Lanbow Claw Skill](https://lanbow.com/blog/lanbow-claw-skill)**
+
 ## What is this?
 
 Lanbow Claw Skill is an Openclaw skill that turns your AI assistant into a full-stack Meta advertising operator. It covers the complete ad lifecycle in 4 features:
