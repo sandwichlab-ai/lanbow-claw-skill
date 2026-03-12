@@ -142,16 +142,23 @@ Execute campaign setup and management via the `lanbow-ads` CLI.
 
 **Requires:** Meta Access Token, App ID, App Secret, Ad Account ID (declared in `requires.env` as `META_ACCESS_TOKEN`, `META_APP_SECRET`, `META_APP_ID`, `META_AD_ACCOUNT_ID`)
 
-**Credential setup (two methods):**
+**Credential setup (try in order):**
 
-1. **Environment variables (preferred):** If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_APP_SECRET`, and `META_AD_ACCOUNT_ID` are already set as environment variables, configure the CLI automatically:
+1. **Environment variables (best):** If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_APP_SECRET`, and `META_AD_ACCOUNT_ID` are already set, configure the CLI automatically:
    ```bash
    lanbow-ads config set --app-id "$META_APP_ID" --app-secret "$META_APP_SECRET"
    lanbow-ads auth set-token "$META_ACCESS_TOKEN"
    lanbow-ads config set --account "$META_AD_ACCOUNT_ID"
    ```
 
-2. **Interactive setup (fallback):** If env vars are not set, guide the user through the setup. Ask for their App ID, App Secret, Access Token, and Ad Account ID, then run the CLI commands to configure. For a full walkthrough, see [meta-account-setup.md](references/meta-account-setup.md).
+2. **Ask the user to provide credentials directly (most common):** If env vars are not set, tell the user exactly how to get each credential from Meta's web interface and ask them to paste the values to you:
+   - **Access Token:** Open https://developers.facebook.com/tools/explorer/ → select your App → click "Generate Access Token" → select permissions `ads_management`, `ads_read`, `business_management` → click "Submit" → copy the token
+   - **App ID & App Secret:** Go to https://developers.facebook.com/apps/ → select your App → App Settings → Basic
+   - **Ad Account ID:** Go to https://adsmanager.facebook.com/ → find `act_XXXXXXXXX` in the URL or account dropdown
+
+   Then run the CLI commands on their behalf. For a full walkthrough, see [meta-account-setup.md](references/meta-account-setup.md).
+
+3. **`lanbow-ads auth login` (last resort):** This opens a browser on the agent's machine for OAuth. It only works when you and the user are on the **same machine**. **Do NOT attempt this by default.** If the user can't open the auth URL or auth login fails, fall back to method 2 immediately — ask for credentials directly. Do NOT retry or keep sending OAuth URLs.
 
 **Credential scope limits:** The agent must ONLY use provided credentials for `lanbow-ads` CLI commands. The agent must NOT log, echo, or store credentials in any file other than via the `lanbow-ads config set` and `lanbow-ads auth set-token` commands. The agent must NOT transmit credentials to any endpoint other than the Meta Marketing API (via the CLI).
 

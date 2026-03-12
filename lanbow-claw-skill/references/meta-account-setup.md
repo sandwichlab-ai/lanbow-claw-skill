@@ -11,9 +11,16 @@ Two paths to get started — pick the one that fits:
 
 ## Agent Behavior
 
-**Important: You (the agent) are likely NOT running on the user's local machine.** The user has a browser; you have the CLI. This means `lanbow-ads auth login` (which opens a local browser + local HTTP server) will NOT work in most cases. Instead, guide the user to obtain their Access Token from Meta's web interface, then have them paste it to you.
+**You (the agent) are almost certainly NOT on the user's local machine.** You have the CLI; the user has the browser. This means:
 
-**Credential setup — check environment variables first:**
+- `lanbow-ads auth login` opens a browser + local HTTP callback on **your** machine, not the user's — **it will not work**.
+- Sending the OAuth authorization URL to the user is also useless — the callback redirects to `localhost` on your machine, so the user completing auth in their browser still cannot reach your local server.
+
+**Never attempt `lanbow-ads auth login` by default.** Only try it if the user explicitly confirms they are on the same machine and have a browser available.
+
+### How to authenticate — try in this order:
+
+**1. Environment variables (best — zero interaction):**
 
 If `META_ACCESS_TOKEN`, `META_APP_ID`, `META_APP_SECRET`, and `META_AD_ACCOUNT_ID` are already set as environment variables, configure the CLI automatically without asking the user:
 ```bash
@@ -22,10 +29,32 @@ lanbow-ads auth set-token "$META_ACCESS_TOKEN"
 lanbow-ads config set --account "$META_AD_ACCOUNT_ID"
 ```
 
-**Interactive fallback — if env vars are not set:**
-1. Guide the user through browser-side steps (developer registration, app creation, token generation)
-2. Ask the user to provide: App ID, App Secret, Access Token, Ad Account ID
-3. Run the CLI commands on their behalf — do not ask the user to run these commands themselves
+**2. Ask the user to provide credentials directly (most common):**
+
+If env vars are not set, ask the user for their App ID, App Secret, Access Token, and Ad Account ID. Tell the user exactly how to get each value — don't just ask, **give them step-by-step instructions they can follow in their browser**.
+
+**To get an Access Token, tell the user:**
+
+> You can get an Access Token yourself:
+> 1. Open https://developers.facebook.com/tools/explorer/
+> 2. In the top-right **App** dropdown, select your App (use the App ID from Step 2)
+> 3. Click **"Generate Access Token"** → select permissions: `ads_management`, `ads_read`, `business_management`
+> 4. Click **"Submit"**
+> 5. Copy the generated Access Token and paste it here
+
+**To get App ID and App Secret, tell the user:**
+
+> 1. Go to https://developers.facebook.com/apps/ and select your App
+> 2. Go to **App Settings → Basic**
+> 3. Your **App ID** is at the top of the page
+> 4. Click **Show** next to **App Secret** (requires password), then copy it
+
+**To get Ad Account ID, tell the user:**
+
+> 1. Go to https://adsmanager.facebook.com/
+> 2. Your Ad Account ID is in the URL or account dropdown (format: `act_XXXXXXXXX`)
+
+Once the user provides these values, run the CLI commands on their behalf:
 
 ```bash
 # User provides App ID and App Secret → you run:
@@ -38,10 +67,14 @@ lanbow-ads auth set-token <ACCESS_TOKEN>
 lanbow-ads config set --account <AD_ACCOUNT_ID>
 ```
 
-**Credential handling rules:**
+**3. `lanbow-ads auth login` (last resort — same machine only):**
+
+Only if the user explicitly says they are on the same machine and can open a browser. If `auth login` fails or the user says they can't open the link, **immediately fall back to method 2** — ask for their credentials directly instead of retrying or sending more URLs.
+
+### Credential handling rules:
 - Do NOT log, echo, or print credentials in plain text
 - Do NOT store credentials in any file other than via `lanbow-ads` CLI commands
-- Do NOT run `lanbow-ads auth login` unless the user explicitly confirms they are on the same machine and have a browser available
+- Do NOT repeatedly attempt `auth login` or send OAuth URLs when the user cannot open them — ask for credentials directly instead
 
 ---
 
